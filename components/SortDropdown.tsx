@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 const SORT_OPTIONS = [
   { label: "Newest", value: "dateLTH" },
@@ -12,28 +12,10 @@ const SORT_OPTIONS = [
 ];
 
 const SortDropdown = () => {
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isOpen, setIsOpen] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        const toggleCheckbox = document.getElementById(
-          "sort-toggle"
-        ) as HTMLInputElement;
-        if (toggleCheckbox) toggleCheckbox.checked = false;
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const currentSort = searchParams.get("sortby") || "dateLTH";
 
@@ -41,20 +23,24 @@ const SortDropdown = () => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("sortby", sortValue);
     router.push(`/products?${params.toString()}`);
+    setIsOpen(false);
   };
 
   return (
     <div
-      className="dropdown-container flex justify-between relative"
-      ref={dropdownRef}>
-      <input type="checkbox" className="peer hidden" id="sort-toggle" />
-      <label
-        htmlFor="sort-toggle"
-        className="dropdown flex justify-between w-32 items-center cursor-pointer">
+      ref={dropdownRef}
+      className="relative inline-block"
+      tabIndex={0}
+      onBlur={(e) => {
+        if (!dropdownRef.current?.contains(e.relatedTarget as Node)) {
+          setIsOpen(false);
+        }
+      }}>
+      <div
+        className="dropdown flex justify-between w-32 items-center cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}>
         <div className="text-center w-full">
-          <span className="text-sm peer-checked:font-medium transition-all duration-200">
-            Sort
-          </span>
+          <span className="text-sm">Sort</span>
         </div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -66,29 +52,32 @@ const SortDropdown = () => {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="stroke-gray-400 transition-transform duration-300 ease-in-out peer-checked:rotate-180">
+          className={`stroke-gray-400 transition-transform duration-300 ${
+            isOpen ? "rotate-180" : ""
+          }`}>
           <path d="M6 9l6 6 6-6" />
         </svg>
-      </label>
-
-      <div
-        className="absolute top-12 right-0 z-10 bg-white border-2 rounded-lg border-gray-200 w-44 
-                    transform opacity-0 scale-95 invisible
-                    peer-checked:opacity-100 peer-checked:scale-100 peer-checked:visible
-                    transition-all duration-200 ease-out origin-top-right">
-        <ul className="py-3 px-4 space-y-3">
-          {SORT_OPTIONS.map(({ label, value }) => (
-            <li
-              key={value}
-              onClick={() => handleSortChange(value)}
-              className={`${
-                currentSort === value ? "text-purple-800" : ""
-              } cursor-pointer hover:text-purple-600 transition-colors duration-200`}>
-              {label}
-            </li>
-          ))}
-        </ul>
       </div>
+
+      {isOpen && (
+        <div
+          className="absolute top-12 right-0 z-10 bg-white border-2 rounded-lg border-gray-200 w-44 
+                    transform opacity-100 scale-100 visible
+                    transition-all duration-200 ease-out origin-top-right">
+          <ul className="py-3 px-4 space-y-3">
+            {SORT_OPTIONS.map(({ label, value }) => (
+              <li
+                key={value}
+                onClick={() => handleSortChange(value)}
+                className={`${
+                  currentSort === value ? "text-purple-800" : ""
+                } cursor-pointer hover:text-purple-600 transition-colors duration-200`}>
+                {label}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
