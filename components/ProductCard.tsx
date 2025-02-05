@@ -36,6 +36,8 @@ export default function ProductCard({ product }: { product: Product }) {
             src={product.image_url || ""}
             alt={product.name}
             className="h-[150px] w-full object-cover sm:h-[250px] rounded-t-lg"
+            height={150}
+            width={100}
           />
         </Link>
 

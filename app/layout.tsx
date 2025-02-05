@@ -6,15 +6,15 @@ export const metadata: Metadata = {
   description: "A shoe store",
 };
 
-export default function RootLayout(props: {
+export default function RootLayout({
+  children,
+}: {
   children: React.ReactNode;
-  modal: React.ReactNode;
 }) {
   return (
-    <html>
+    <html lang="en">
       <body>
-        {props.children}
-        {props.modal}
+        {children}
         <div id="modal-root" />
       </body>
     </html>
