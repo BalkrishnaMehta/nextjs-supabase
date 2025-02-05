@@ -32,7 +32,7 @@ export default function ProductForm({ formData }: { formData?: Product }) {
     if (state?.errors === undefined) {
       router.back();
     }
-  }, [state?.errors]);
+  }, [state?.errors, router]);
 
   const [selectedColors, setSelectedColors] = useState<string[]>(
     formData?.colors || ["#FFFFFF"]

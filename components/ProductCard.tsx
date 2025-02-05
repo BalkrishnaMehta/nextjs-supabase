@@ -2,6 +2,7 @@ import Link from "next/link";
 import DeleteIcon from "./DeleteIcon";
 import Product from "@/models/product";
 import Rating from "./Rating";
+import Image from "next/image";
 
 export default function ProductCard({ product }: { product: Product }) {
   return (
@@ -31,8 +32,8 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
 
         <Link href={`/products/${product.id}`} className="group block">
-          <img
-            src={product.image_url}
+          <Image
+            src={product.image_url || ""}
             alt={product.name}
             className="h-[150px] w-full object-cover sm:h-[250px] rounded-t-lg"
           />

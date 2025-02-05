@@ -62,7 +62,7 @@ export async function createProduct(prevState: FormState, formData: FormData) {
     revalidatePath("/products");
   } catch (error) {
     return {
-      message: "An unexpected error occurred",
+      message: (error as Error).message || "An unexpected error occurred",
     };
   }
 }
@@ -104,15 +104,12 @@ export async function updateProduct(
     revalidatePath("/products");
   } catch (error) {
     return {
-      message: "An unexpected error occurred",
+      message: (error as Error).message || "An unexpected error occurred",
     };
   }
 }
 
-export async function deleteProduct(
-  id: string,
-  prevState: { message?: string } | undefined
-) {
+export async function deleteProduct(id: string) {
   try {
     const { error } = await supabase.from("products").delete().eq("id", id);
 
@@ -125,7 +122,7 @@ export async function deleteProduct(
     revalidatePath("/products");
   } catch (error) {
     return {
-      message: "An unexpected error occurred",
+      message: (error as Error).message || "An unexpected error occurred",
     };
   }
 }
