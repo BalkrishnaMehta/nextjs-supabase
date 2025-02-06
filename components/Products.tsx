@@ -21,7 +21,7 @@ export default async function Products({
   Object.entries(filters).forEach(([key, values]) => {
     if (values.length > 0) {
       if (key === "sizes" || key === "colors") {
-        query = query.contains(key, values);
+        query = query.overlaps(key, values);
       } else {
         query = query.in(key, values);
       }

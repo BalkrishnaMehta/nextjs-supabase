@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const SORT_OPTIONS = [
   { label: "Newest", value: "dateLTH" },
@@ -16,6 +16,17 @@ const SortDropdown = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (searchParams) {
+      setIsLoading(false);
+    }
+  }, [searchParams]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   const currentSort = searchParams.get("sortby") || "dateLTH";
 

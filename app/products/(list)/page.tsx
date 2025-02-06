@@ -2,14 +2,12 @@ import Products from "@/components/Products";
 import { Suspense } from "react";
 import Filters from "@/models/filters";
 
-type SearchParams = { [key: string]: string | string[] | undefined };
-
 export default async function Page({
   searchParams,
 }: {
-  searchParams?: SearchParams;
+  searchParams: Promise<Record<string, string | string[]>>;
 }) {
-  const params = await Promise.resolve(searchParams || {});
+  const params = await searchParams;
 
   const filters: Filters = {
     category: [],
@@ -21,7 +19,7 @@ export default async function Page({
   const SORT_MAPPINGS = {
     dateLTH: { created_at: false },
     dateHTL: { created_at: true },
-    rating: { rating: false },
+    rating: { rating: true },
     priceLTH: { price: true },
     priceHTL: { price: false },
   };

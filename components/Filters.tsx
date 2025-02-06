@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChangeEvent, useCallback } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 
 type FilterCategory = {
   gender: string[];
@@ -12,25 +12,26 @@ type FilterCategory = {
 
 type FilterValue = string | number;
 
+const filterCategories: FilterCategory = {
+  gender: ["Male", "Female", "Unisex"],
+  color: [
+    "#F9F6E6",
+    "#000957",
+    "#5D8736",
+    "#ffffff",
+    "#000000",
+    "#20fea9",
+    "#db0000",
+    "#00ffb3",
+  ],
+  size: [6, 7, 8, 9, 10, 11],
+  brand: ["Adidas", "Nike", "Puma"],
+};
+
 export default function ProductFilters() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
   const searchParams = useSearchParams();
-
-  const filterCategories: FilterCategory = {
-    gender: ["Male", "Female", "Unisex"],
-    color: [
-      "#F9F6E6",
-      "#000957",
-      "#5D8736",
-      "#ffffff",
-      "#000000",
-      "#20fea9",
-      "#db0000",
-      "#00ffb3",
-    ],
-    size: [6, 7, 8, 9, 10, 11],
-    brand: ["Adidas", "Nike", "Puma"],
-  };
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -52,6 +53,12 @@ export default function ProductFilters() {
     [searchParams]
   );
 
+  useEffect(() => {
+    if (searchParams) {
+      setIsLoading(false);
+    }
+  }, [searchParams]);
+
   const handleFilterCheck = (e: ChangeEvent<HTMLInputElement>) => {
     const category = e.target.name;
     const value = e.target.value;
@@ -66,6 +73,10 @@ export default function ProductFilters() {
       category === "color" ? value.toString().slice(1) : String(value)
     );
   };
+
+  if (isLoading) {
+    return <div>Loading filters...</div>;
+  }
 
   return (
     <>
@@ -98,7 +109,17 @@ export default function ProductFilters() {
                     />
                     <div className="w-full">
                       <span className="text-sm text-center peer-checked:font-medium">
-                        {filterValue.toString().toUpperCase()}
+                        {categoryName === "color" ? (
+                          <input
+                            type="color"
+                            value={filterValue.toString().toUpperCase()}
+                            className="h-8 w-16"
+                            disabled
+                            name="colors"
+                          />
+                        ) : (
+                          filterValue.toString().toUpperCase()
+                        )}
                       </span>
                     </div>
                   </label>
